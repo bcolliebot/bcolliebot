@@ -1,0 +1,104 @@
+{
+  "$schema": "https://developers.reddit.com/schema/config-file.v1.json",
+  "name": "bcollie-modbot",
+  "server": {
+    "dir": "dist/server",
+    "entry": "index.cjs"
+  },
+  "triggers": {
+    "onAppInstall": "/internal/triggers/on-app-install",
+    "onCommentCreate": "/internal/triggers/on-comment-submit",
+    "onCommentSubmit": "/internal/triggers/on-comment-submit",
+    "onPostCreate": "/internal/triggers/on-post-submit",
+    "onPostSubmit": "/internal/triggers/on-post-submit"
+  },
+  "settings": {
+    "subreddit": {
+      "urgentRehomingEnabled": {
+        "type": "boolean",
+        "label": "Enable urgent rehoming detector",
+        "defaultValue": true
+      },
+      "blockedCrosspostSubreddits": {
+        "type": "paragraph",
+        "label": "Blocked crosspost source subreddits",
+        "helpText": "Use one subreddit name per line or comma-separated, without r/ prefixes.",
+        "defaultValue": "national_pet_adoption"
+      },
+      "autoRemoveBlockedCrossposts": {
+        "type": "boolean",
+        "label": "Auto-remove blocked crossposts",
+        "defaultValue": true
+      },
+      "autoReplyMaxPostAgeHours": {
+        "type": "number",
+        "label": "Max age for breed-ID auto reply (hours)",
+        "defaultValue": 1
+      },
+      "summonMaxCommentAgeHours": {
+        "type": "number",
+        "label": "Max age for summon commands (hours)",
+        "defaultValue": 1
+      },
+      "imageMetadataReviewEnabled": {
+        "type": "boolean",
+        "label": "Enable image metadata review",
+        "defaultValue": true
+      },
+      "imageMetadataMaxPostAgeHours": {
+        "type": "number",
+        "label": "Max post age for image metadata review (hours)",
+        "defaultValue": 24
+      },
+      "negativeCommentCleanupEnabled": {
+        "type": "boolean",
+        "label": "Enable low-score bot comment cleanup",
+        "defaultValue": true
+      },
+      "negativeCommentDeleteScore": {
+        "type": "number",
+        "label": "Delete bot comments at or below this score",
+        "defaultValue": -3
+      },
+      "negativeCommentLookbackHours": {
+        "type": "number",
+        "label": "Look back this many hours for low-score bot comments",
+        "defaultValue": 24
+      },
+      "negativeCommentScanLimit": {
+        "type": "number",
+        "label": "Max bot comments to scan per cleanup run",
+        "defaultValue": 200
+      }
+    }
+  },
+  "scheduler": {
+    "tasks": {
+      "cleanupNegativeComments": {
+        "endpoint": "/internal/tasks/cleanup-negative-comments",
+        "cron": "0 */15 * * * *"
+      }
+    }
+  },
+  "scripts": {
+    "build": "npm run build",
+    "dev": "npm run build:watch"
+  },
+  "permissions": {
+    "redis": true,
+    "reddit": {
+      "enable": true,
+      "scope": "moderator"
+    },
+    "http": {
+      "enable": true,
+      "domains": [
+        "i.redd.it",
+        "preview.redd.it",
+        "external-preview.redd.it",
+        "redditmedia.com",
+        "www.redditmedia.com"
+      ]
+    }
+  }
+}
