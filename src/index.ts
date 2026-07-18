@@ -1,7 +1,6 @@
 import { Hono } from 'hono';
 import { serve } from '@hono/node-server';
 import { createServer, getServerPort } from '@devvit/web/server';
-import { api } from './routes/api.js';
 import { tasks } from './routes/tasks.js';
 import { triggers } from './routes/triggers.js';
 
@@ -14,8 +13,6 @@ const internal = new Hono();
 internal.route('/tasks', tasks);
 internal.route('/triggers', triggers);
 
-// Mount public API router (template placeholder).
-app.route('/api', api);
 app.route('/internal', internal);
 
 // Start Node server with Devvit-provided server factory and assigned port.

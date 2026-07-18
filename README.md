@@ -62,43 +62,26 @@ As of July 18, 2026:
 src/
 ├── index.ts                  # Main server setup and route mounting
 ├── features/
-│   ├── mop/
-│   │   ├── forms.ts          # Mop form handling logic
-│   │   ├── menu.ts           # Mop form field definitions
-│   │   └── nuke.ts           # Mop moderation operations
-│   ├── keyword-votes/
-│   │   ├── README.md
-│   │   ├── render.ts         # Sticky tally comment rendering
-│   │   ├── settings.ts       # Keyword settings parsing/validation
-│   │   ├── storage.ts        # Redis storage for tallies/comment ids
-│   │   └── triggers.ts       # Post create + comment submit handlers
-│   ├── banned-words/
-│   │   ├── README.md
-│   │   ├── matching.ts       # Word/phrase matching rules
-│   │   ├── settings.ts       # Banned words settings parsing/validation
-│   │   └── triggers.ts       # Post/comment enforcement + modmail
-│   ├── scheduler-megathread/
-│   │   ├── README.md
-│   │   ├── handlers.ts       # Scheduled/manual megathread creation logic
-│   │   ├── settings.ts       # Megathread settings parsing/validation
-│   │   └── storage.ts        # Weekly idempotency Redis keys
-│   └── flair-updater/
-│       ├── README.md
-│       ├── settings.ts       # Flair updater feature toggle access
-│       ├── storage.ts        # Redis post/comment counters
-│       └── triggers.ts       # Post/comment submission handlers
+│   ├── bot-settings.ts       # Shared subreddit settings readers
+│   ├── breed-id/             # Breed-ID detection, responses, undo storage, triggers
+│   ├── cleanup-negative-comments/
+│   │   └── run.ts            # Scheduled cleanup for low-score bot comments
+│   ├── image-metadata-review/
+│   │   ├── detect.ts         # Image URL collection and metadata analysis
+│   │   ├── settings.ts       # Image metadata review settings
+│   │   ├── storage.ts        # Redis idempotency state
+│   │   ├── text.ts           # Moderator report text
+│   │   └── triggers.ts       # Post trigger handler
+│   ├── summons/              # Comment command handling, names, responses, storage
+│   └── urgent-rehoming/      # Urgent rehoming detection, settings, storage, triggers
 └── routes/
-    ├── api.ts                # Public API endpoints (placeholder)
-    ├── forms.ts              # Mop form submit route handlers
-    ├── menu.ts               # Mop menu route handlers
-    ├── scheduler.ts          # Scheduler task endpoints
-    ├── settings.ts           # Install setting validation endpoints
+    ├── tasks.ts              # Scheduled task endpoints
     └── triggers.ts           # App lifecycle/content trigger endpoints
 ```
 
 ## Project Notes
 
-Some template folders remain in the repo from the original scaffold, but the active live behavior for this app is wired through:
+The active live behavior for this app is wired through:
 
 - `src/features/breed-id/`
 - `src/features/summons/`
@@ -126,9 +109,8 @@ Some template folders remain in the repo from the original scaffold, but the act
 
 ## Development Notes
 
-- **Permissions**: This template requires `redis: true` and Reddit API moderator scope in `devvit.json`.
-- **User Types**: Mop menu items are restricted to `moderator`.
-- **Feature isolation**: Each feature folder is intentionally self-contained for template portability.
+- **Permissions**: The app requires `redis: true`, Reddit API moderator scope, and approved image fetch domains in `devvit.json`.
+- **Feature isolation**: Each active feature folder owns its own detection, storage, response text, and trigger behavior where practical.
 
 ## Deployment
 

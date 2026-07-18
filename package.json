@@ -14,7 +14,7 @@
     "lint": "eslint \"src/**/*.{ts,tsx}\"",
     "prettier": "prettier --write .",
     "test": "npm run lint && npm run test:unit",
-    "test:unit": "npm run type-check && node --test \"dist/types/**/*.test.js\"",
+    "test:unit": "node -e \"fs.rmSync('dist/types',{recursive:true,force:true})\" && npm run type-check && node --test \"dist/types/**/*.test.js\"",
     "type-check": "tsc --build"
   },
   "engines": {
