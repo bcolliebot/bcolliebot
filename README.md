@@ -22,7 +22,7 @@ This app is a migration of the legacy `BorderCollieBot` Reddit Data API automati
 
 - **Breed ID auto-response**: Detects likely breed-identification posts, applies flair, and posts a sticky informational reply
 - **Wrong undo flow**: `wrong` removes the breed-ID auto reply and clears the Breed ID flair
-- **Summon commands**: Supports commands such as `!appearance`, `!vet`, and name suggestion commands. Public command documentation lives at `docs/commands.html`.
+- **Summon commands**: Supports commands such as `!appearance`, `!vet`, and name suggestion commands. Public command documentation is available at [bcolliebot.github.io/bcolliebot/commands.html](https://bcolliebot.github.io/bcolliebot/commands.html).
 - **Urgent rehoming moderation**: Detects urgent transfer/rehoming language and blocked crossposts for mod review or removal
 - **Image metadata review**: Reports image posts whose metadata suggests AI generation or provenance markers
 - **Low-score cleanup**: Scheduled cleanup for low-score bot comments
@@ -44,17 +44,26 @@ As of July 18, 2026:
 
 ## Getting Started
 
-1. **Clone this repo**
-2. **Install dependencies**:
+### Install the Existing App
+
+1. Install `bcollie-modbot` from Reddit's app directory for your subreddit.
+2. Review the subreddit install settings and adjust the response text, enabled features, thresholds, and blocked crosspost sources for your community.
+3. Test the summon commands in a low-traffic or moderator-only thread before relying on them in normal community use.
+
+### Make Your Own Version
+
+1. Clone or fork this repo.
+2. Install dependencies:
    ```bash
    npm install
    ```
-3. **Configure your app** in `devvit.json` and subreddit app settings
-4. **Start developing**:
+3. Configure your app name, triggers, permissions, and settings in `devvit.json`.
+4. Start developing:
    ```bash
    npm run dev
    ```
-5. **Test your changes** in your development subreddit
+5. Test your changes in your development subreddit.
+6. Deploy or publish your own Devvit app when ready.
 
 ## Project Structure
 
