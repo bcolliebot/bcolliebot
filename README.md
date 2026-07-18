@@ -1,23 +1,39 @@
-# Devvit Mod Tool Template
+# bcollie-modbot Devvit App
 
-A template for building Reddit moderation tools using Devvit Web with feature-isolated server modules.  
-Each moderation capability lives in its own folder under `src/features` so developers can remove a feature by deleting its folder and unregistering its route wiring.
+This is the Devvit replacement for the legacy BorderCollieBot Data API / PRAW moderation bot formerly run outside Reddit. It is currently being expanded so that it may be helpful to other dog breed subreddits as well, including moving lots of the breed-specific stuff into settings so that moderators can configure it for their own breed subreddits. If you want to install the app for your own subreddit but find that you need more configuration options, please reach out to the moderators of `r/bordercollie` or contact the developer directly.
 
-## Included Features
+## App Migration Program Note
 
-- **Mop Moderation Tool**: Moderator menu actions to remove/lock comment trees or all comments in a post.
-- **Keyword Vote Tallies**: Configurable `!keyword` vote comments with a sticky tally comment per post.
-- **Banned Words Enforcement**: Auto-removes matching posts/comments and sends a modmail notice to the author; subreddit moderators are exempt.
-- **Weekly Megathread Scheduler**: Posts a recurring weekly megathread on a configurable UTC weekday, plus manual mod-triggered creation.
-- **Flair Updater**: Updates user flair on each post/comment event using Redis-backed counts (`posts: X | comments: Y`).
+This app is a migration of the legacy `BorderCollieBot` Reddit Data API automation to Reddit's Developer Platform.
 
-### Feature Docs
+- Legacy bot/app name replaced by this Devvit app: `BorderCollieBot`
+- Legacy app type: Python `praw` bot / external Reddit Data API automation
+- Legacy bot account: `u/BorderCollieBot`
+- Primary target subreddit: `r/bordercollie`
+- Migration status: Devvit app published and installed; legacy external bot stopped
+- External fetch domains used by this migrated app:
+  - `i.redd.it`
+  - `preview.redd.it`
+  - `external-preview.redd.it`
+  - `redditmedia.com`
+  - `www.redditmedia.com`
 
-- [Mop README](src/features/mop/README.md)
-- [Keyword Votes README](src/features/keyword-votes/README.md)
-- [Banned Words README](src/features/banned-words/README.md)
-- [Weekly Megathread Scheduler README](src/features/scheduler-megathread/README.md)
-- [Flair Updater README](src/features/flair-updater/README.md)
+## Current Features
+
+- **Breed ID auto-response**: Detects likely breed-identification posts, applies flair, and posts a sticky informational reply
+- **Wrong undo flow**: `wrong` removes the breed-ID auto reply and clears the Breed ID flair
+- **Summon commands**: Supports commands such as `!appearance`, `!vet`, and name suggestion commands. Public command documentation lives at `docs/commands.html`.
+- **Urgent rehoming moderation**: Detects urgent transfer/rehoming language and blocked crossposts for mod review or removal
+- **Image metadata review**: Reports image posts whose metadata suggests AI generation or provenance markers
+- **Low-score cleanup**: Scheduled cleanup for low-score bot comments
+
+## Production Status
+
+As of July 18, 2026:
+
+- this Devvit app has replaced the legacy external bot `BorderCollieBot`
+- the legacy bot process has been stopped
+- live automation is intended to run through this Devvit app only
 
 ## Tech Stack
 
@@ -28,14 +44,12 @@ Each moderation capability lives in its own folder under `src/features` so devel
 
 ## Getting Started
 
-1. **Clone this template** or use it as a starting point for your mod tool
+1. **Clone this repo**
 2. **Install dependencies**:
    ```bash
    npm install
    ```
-3. **Configure your app** in `devvit.json`:
-   - Update the app name
-   - Set your development subreddit
+3. **Configure your app** in `devvit.json` and subreddit app settings
 4. **Start developing**:
    ```bash
    npm run dev
@@ -82,20 +96,23 @@ src/
     └── triggers.ts           # App lifecycle/content trigger endpoints
 ```
 
-## Customizing Your Mod Tool
+## Project Notes
 
-This template is designed to be easily customizable:
+Some template folders remain in the repo from the original scaffold, but the active live behavior for this app is wired through:
 
-1. **Modify existing actions**: Edit the Mop logic in `src/features/mop/`.
-2. **Add/remove isolated features**: Add a folder under `src/features/` and wire/unwire it in `src/routes/*` and `devvit.json`.
-3. **Add new menu items**: Update `devvit.json` and add handlers in `src/routes/menu.ts`.
-4. **Add API endpoints**: Extend `src/routes/api.ts` for external integrations.
+- `src/features/breed-id/`
+- `src/features/summons/`
+- `src/features/urgent-rehoming/`
+- `src/features/image-metadata-review/`
+- `src/features/cleanup-negative-comments/`
+- `src/routes/triggers.ts`
+- `src/routes/tasks.ts`
 
 ## Configuration Overview
 
 - **Install settings** are configured in `devvit.json` under `settings.subreddit`.
 - **Triggers** are configured in `devvit.json` and handled in `src/routes/triggers.ts`.
-- **Scheduled jobs** are configured in `devvit.json.scheduler.tasks` and handled in `src/routes/scheduler.ts`.
+- **Scheduled jobs** are configured in `devvit.json.scheduler.tasks` and handled in `src/routes/tasks.ts`.
 - **Feature toggles** are checked inside each feature's `settings.ts`.
 
 ## Commands
@@ -120,4 +137,4 @@ This template is designed to be easily customizable:
 3. Use `npm run launch` to submit for Reddit's app review process
 4. Once approved, users can install your mod tool from Reddit's app directory
 
-This template provides a modular starting point for building Reddit moderation tools that are easy to extend and easy to remove feature-by-feature.
+This app is the active Devvit migration target for BorderCollieBot.

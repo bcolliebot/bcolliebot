@@ -1,14 +1,17 @@
 import { context, reddit } from '@devvit/web/server';
+import type { Comment } from '@devvit/reddit';
 import type { OnCommentSubmitRequest, T1, T3 } from '@devvit/web/shared';
-import { getBotThresholdSettings } from '../bot-settings.js';
+import {
+  getBotResponseTextSettings,
+  getBotThresholdSettings,
+} from '../bot-settings.js';
+import type { BotResponseTextSettings } from '../bot-settings.js';
 import { SIGNATURE } from '../breed-id/text.js';
 import { getAutoCommentId, isWrongSubmission } from '../breed-id/storage.js';
 import { getNames } from './names.js';
 import {
-  APPEARANCE_RESPONSE,
-  EXISTING_BREED_ID_ACK_PREFIX,
-  SUMMON_ACK_PREFIX,
-  VET_RESPONSE,
+  buildAppearanceResponse,
+  buildVetResponse,
 } from './text.js';
 import { markCommentHandled } from './storage.js';
 
@@ -43,7 +46,7 @@ function hasIntersection(tokens: Set<string>, wanted: Set<string>): boolean {
   return false;
 }
 
-async function postThreadReply(postId: T3, responseText: string) {
+async function postThreadReply(postId: T3, responseText: string): Promise<Comment> {
   const post = await reddit.getPostById(postId);
   const reply = await post.addComment({
     text: responseText,
@@ -71,23 +74,24 @@ async function acknowledgeSummoner(
   });
 }
 
-function buildNamesResponse(gender: string | undefined, count: number): string {
+function buildNamesResponse(
+  gender: string | undefined,
+  count: number,
+  responseText: BotResponseTextSettings
+): string {
   let category: 'girl' | 'boy' | 'neutral' = 'neutral';
-  let intro =
-    'BorderCollieBot has been summoned to help with some name suggestions! Here are some name ideas for you: \n\n* ';
+  let intro = responseText.nameResponseIntro;
 
   if (gender === 'girl') {
     category = 'girl';
-    intro =
-      'BorderCollieBot has been summoned to help with some name suggestions! Here are some names which might work for a girl dog: \n\n* ';
+    intro = responseText.girlNameResponseIntro;
   } else if (gender === 'boy') {
     category = 'boy';
-    intro =
-      'BorderCollieBot has been summoned to help with some name suggestions! Here are some names which might work for a boy dog: \n\n* ';
+    intro = responseText.boyNameResponseIntro;
   }
 
   const names = getNames(category, count);
-  return intro + names.join('\n* ') + SIGNATURE;
+  return `${intro.trim()}\n\n* ${names.join('\n* ')}${SIGNATURE}`;
 }
 
 export async function handleSummonCommands(
@@ -118,12 +122,14 @@ export async function handleSummonCommands(
       return true;
     }
 
+    const responseText = await getBotResponseTextSettings();
     const response = buildNamesResponse(
       namesMatch[1]?.toLowerCase(),
-      namesMatch[2] ? Number.parseInt(namesMatch[2], 10) : 10
+      namesMatch[2] ? Number.parseInt(namesMatch[2], 10) : 10,
+      responseText
     );
     const reply = await postThreadReply(asT3(postId), response);
-    await acknowledgeSummoner(asT1(commentId), reply.permalink, SUMMON_ACK_PREFIX);
+    await acknowledgeSummoner(asT1(commentId), reply.permalink, responseText.summonAckText);
     return true;
   }
 
@@ -145,6 +151,8 @@ export async function handleSummonCommands(
     return true;
   }
 
+  const responseText = await getBotResponseTextSettings();
+
   // Appearance can reuse the existing breed-ID comment, but only when it is the
   // only summon intent in the comment. Vet/help commands need their own reply.
   if (appearance && !vet) {
@@ -155,15 +163,20 @@ export async function handleSummonCommands(
         await acknowledgeSummoner(
           asT1(commentId),
           existingAutoComment.permalink,
-          EXISTING_BREED_ID_ACK_PREFIX + SIGNATURE
+          responseText.existingBreedIdAckText + SIGNATURE
         );
         return true;
       }
     }
   }
 
-  const responseText = vet ? VET_RESPONSE : APPEARANCE_RESPONSE;
-  const threadReply = await postThreadReply(asT3(postId), responseText);
-  await acknowledgeSummoner(asT1(commentId), threadReply.permalink, SUMMON_ACK_PREFIX);
+  const responseBody = vet
+    ? buildVetResponse(responseText.vetResponseText)
+    : buildAppearanceResponse(
+        responseText.appearanceResponseIntro,
+        responseText.breedIdCoreText
+      );
+  const threadReply = await postThreadReply(asT3(postId), responseBody);
+  await acknowledgeSummoner(asT1(commentId), threadReply.permalink, responseText.summonAckText);
   return true;
 }

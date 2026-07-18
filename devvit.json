@@ -40,6 +40,63 @@
         "label": "Max age for summon commands (hours)",
         "defaultValue": 1
       },
+      "breedIdAutoIntro": {
+        "type": "paragraph",
+        "label": "Breed-ID auto-response intro",
+        "helpText": "Intro text used when the app automatically replies to likely breed-identification posts.",
+        "defaultValue": "bcollie-modbot thinks this post may be asking for breed or mix identification."
+      },
+      "breedIdCoreText": {
+        "type": "paragraph",
+        "label": "Breed-ID guidance text",
+        "helpText": "Shared breed-identification guidance used by auto replies and appearance summon commands.",
+        "defaultValue": "Visual breed identification is very unreliable, especially from photos alone.\n\nMany shelter and rescue dogs get labelled as border collie mixes because black-and-white markings are common across many breeds.\n\nBorder collies were historically selected by working ability, not appearance, so they vary widely in size, coat type, colour, markings, and ear shape.\n\nIf you want the best possible answer, a DNA test from Embark or Wisdom Panel is the most reliable way to estimate ancestry. /r/doggydna is a good place to compare results."
+      },
+      "breedIdAutoCaveat": {
+        "type": "paragraph",
+        "label": "Breed-ID auto-response caveat",
+        "helpText": "Caveat appended to automatic breed-ID replies.",
+        "defaultValue": "If I got this wrong and this post is not actually about breed identification, reply `wrong` and I'll remove my comment and the Breed ID flair."
+      },
+      "appearanceResponseIntro": {
+        "type": "paragraph",
+        "label": "Appearance command intro",
+        "helpText": "Intro text used before the breed-ID guidance for appearance summon commands.",
+        "defaultValue": "bcollie-modbot has been summoned because this post may be about breed identification."
+      },
+      "vetResponseText": {
+        "type": "paragraph",
+        "label": "Vet command response text",
+        "helpText": "Response text used for vet, health, injury, illness, and emergency summon commands.",
+        "defaultValue": "bcollie-modbot has been summoned because this post may be about health issues, illness or injury.\n\nThis subreddit is not a source of, or a substitute for, veterinary advice. If your dog is sick, injured, or otherwise unwell, please consult your veterinarian immediately.\n\nWhile you are waiting for your appointment, consider posting to /r/AskVet, a subreddit which may be able to provide more qualified advice."
+      },
+      "nameResponseIntro": {
+        "type": "paragraph",
+        "label": "Names command intro",
+        "defaultValue": "bcollie-modbot has been summoned to help with some name suggestions! Here are some name ideas for you:"
+      },
+      "girlNameResponseIntro": {
+        "type": "paragraph",
+        "label": "Girl names command intro",
+        "defaultValue": "bcollie-modbot has been summoned to help with some name suggestions! Here are some names which might work for a girl dog:"
+      },
+      "boyNameResponseIntro": {
+        "type": "paragraph",
+        "label": "Boy names command intro",
+        "defaultValue": "bcollie-modbot has been summoned to help with some name suggestions! Here are some names which might work for a boy dog:"
+      },
+      "summonAckText": {
+        "type": "paragraph",
+        "label": "Summon acknowledgement text",
+        "helpText": "Reply text used when acknowledging the user who summoned the app. The jump link is appended automatically.",
+        "defaultValue": "Thanks for summoning me. I posted my full response as a top-level mod comment so everyone in the thread can see it."
+      },
+      "existingBreedIdAckText": {
+        "type": "paragraph",
+        "label": "Existing breed-ID acknowledgement text",
+        "helpText": "Reply text used when an appearance command reuses an existing breed-ID response. The jump link is appended automatically.",
+        "defaultValue": "Thanks for summoning me. I already posted breed-ID guidance in this thread, so I'm replying here to avoid duplicate bot comments."
+      },
       "imageMetadataReviewEnabled": {
         "type": "boolean",
         "label": "Enable image metadata review",

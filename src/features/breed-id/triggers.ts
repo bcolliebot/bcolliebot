@@ -1,7 +1,10 @@
 import { context, reddit } from '@devvit/web/server';
 import type { OnCommentSubmitRequest, OnPostSubmitRequest, T1, T3 } from '@devvit/web/shared';
-import { getBotThresholdSettings } from '../bot-settings.js';
-import { BREED_ID_AUTO_RESPONSE, BREED_ID_FLAIR_TEXT } from './text.js';
+import {
+  getBotResponseTextSettings,
+  getBotThresholdSettings,
+} from '../bot-settings.js';
+import { BREED_ID_FLAIR_TEXT, buildBreedIdAutoResponse } from './text.js';
 import { detectBreedIdIntent, isWrongFeedbackComment } from './detect.js';
 import {
   clearAutoCommentId,
@@ -50,9 +53,14 @@ async function clearPostFlair(postId: T3, subredditName: string): Promise<void> 
 }
 
 async function addDistinguishedStickyComment(postId: T3): Promise<string> {
+  const responseText = await getBotResponseTextSettings();
   const post = await reddit.getPostById(postId);
   const reply = await post.addComment({
-    text: BREED_ID_AUTO_RESPONSE,
+    text: buildBreedIdAutoResponse(
+      responseText.breedIdAutoIntro,
+      responseText.breedIdCoreText,
+      responseText.breedIdAutoCaveat
+    ),
     runAs: 'APP',
   });
 
