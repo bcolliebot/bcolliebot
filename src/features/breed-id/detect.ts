@@ -133,3 +133,15 @@ export function isWrongFeedbackComment(text: string): boolean {
   }
   return WRONG_WORD_RE.test(lowered) && !NOT_WRONG_RE.test(lowered);
 }
+
+export function isWrongFeedbackReply(
+  text: string,
+  parentId: string | undefined,
+  autoCommentId: string | undefined
+): boolean {
+  if (!parentId || !autoCommentId) return false;
+  const fullCommentId = autoCommentId.startsWith('t1_')
+    ? autoCommentId
+    : `t1_${autoCommentId}`;
+  return parentId === fullCommentId && isWrongFeedbackComment(text);
+}

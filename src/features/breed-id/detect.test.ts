@@ -4,6 +4,7 @@ import {
   detectBreedIdIntent,
   isLikelyImagePost,
   isWrongFeedbackComment,
+  isWrongFeedbackReply,
   normalizeText,
 } from './detect.js';
 
@@ -43,4 +44,20 @@ void test('detects wrong feedback while ignoring negated wrong text', () => {
   assert.equal(isWrongFeedbackComment('!wrong'), true);
   assert.equal(isWrongFeedbackComment('wrong post'), true);
   assert.equal(isWrongFeedbackComment('this is not wrong'), false);
+});
+
+void test('undo only accepts feedback directly replying to the tracked bot comment', () => {
+  assert.equal(isWrongFeedbackReply('wrong', 't1_bot', 't1_bot'), true);
+  assert.equal(isWrongFeedbackReply('!undo', 't1_bot', 'bot'), true);
+  assert.equal(isWrongFeedbackReply('wrong', 't1_unrelated', 't1_bot'), false);
+  assert.equal(isWrongFeedbackReply('wrong', 't3_post', 't1_bot'), false);
+  assert.equal(isWrongFeedbackReply('wrong', undefined, 't1_bot'), false);
+  assert.equal(isWrongFeedbackReply('wrong', 't1_bot', undefined), false);
+  assert.equal(isWrongFeedbackReply('this is not wrong', 't1_bot', 't1_bot'), false);
+});
+
+void test('the bot cannot undo itself when its automatic reply explains wrong feedback', () => {
+  const body = "If I got this wrong, reply `wrong` and I'll remove my comment.";
+  assert.equal(isWrongFeedbackComment(body), true);
+  assert.equal(isWrongFeedbackReply(body, 't3_post', 't1_bot'), false);
 });

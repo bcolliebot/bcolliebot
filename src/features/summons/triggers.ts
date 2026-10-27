@@ -7,7 +7,7 @@ import {
 } from '../bot-settings.js';
 import type { BotResponseTextSettings } from '../bot-settings.js';
 import { SIGNATURE } from '../breed-id/text.js';
-import { getAutoCommentId, isWrongSubmission } from '../breed-id/storage.js';
+import { getAutoCommentId } from '../breed-id/storage.js';
 import { getNames } from './names.js';
 import {
   buildAppearanceResponse,
@@ -156,11 +156,7 @@ export async function handleSummonCommands(
   }
 
   console.log('[summons] recognized command', { commentId, postId, appearance, vet });
-  const wrongSubmission = await isWrongSubmission(subredditId, postId);
-  if (appearance && !vet && wrongSubmission) {
-    console.log('[summons] skipped: post previously marked wrong', { commentId, postId });
-    return false;
-  }
+  // An explicit summon can request guidance even after an automatic reply was undone.
 
   const claimed = await markCommentHandled(subredditId, commentId);
   if (claimed !== 1) {

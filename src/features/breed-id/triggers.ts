@@ -5,7 +5,7 @@ import {
   getBotThresholdSettings,
 } from '../bot-settings.js';
 import { BREED_ID_FLAIR_TEXT, buildBreedIdAutoResponse } from './text.js';
-import { detectBreedIdIntent, isWrongFeedbackComment } from './detect.js';
+import { detectBreedIdIntent, isWrongFeedbackComment, isWrongFeedbackReply } from './detect.js';
 import {
   clearAutoCommentId,
   getAutoCommentId,
@@ -144,7 +144,7 @@ export async function handleBreedIdWrongFeedback(
 
   const fullPostId = asT3(postId);
   const autoCommentId = await getAutoCommentId(subredditId, fullPostId);
-  if (!autoCommentId) {
+  if (!autoCommentId || !isWrongFeedbackReply(commentBody, input.comment?.parentId, autoCommentId)) {
     return;
   }
 
@@ -153,6 +153,7 @@ export async function handleBreedIdWrongFeedback(
   await clearPostFlair(fullPostId, subredditName);
   await clearAutoCommentId(subredditId, fullPostId);
   await markWrongSubmission(subredditId, postId);
+  console.log('[breed-id] direct reply marked post wrong', { postId, commentId, autoCommentId });
 
   const wrongComment = await reddit.getCommentById(asT1(commentId));
   await wrongComment.remove();
