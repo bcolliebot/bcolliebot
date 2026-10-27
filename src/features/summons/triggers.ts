@@ -7,7 +7,6 @@ import {
 } from '../bot-settings.js';
 import type { BotResponseTextSettings } from '../bot-settings.js';
 import { SIGNATURE } from '../breed-id/text.js';
-import { getAutoCommentId } from '../breed-id/storage.js';
 import { getNames } from './names.js';
 import {
   buildAppearanceResponse,
@@ -166,23 +165,8 @@ export async function handleSummonCommands(
 
   const responseText = await getBotResponseTextSettings();
 
-  // Appearance can reuse the existing breed-ID comment, but only when it is the
-  // only summon intent in the comment. Vet/help commands need their own reply.
-  if (appearance && !vet) {
-    const existingAutoCommentId = await getAutoCommentId(subredditId, asT3(postId));
-    if (existingAutoCommentId) {
-      const existingAutoComment = await reddit.getCommentById(asT1(existingAutoCommentId));
-      if (!existingAutoComment.removed) {
-        await acknowledgeSummoner(
-          asT1(commentId),
-          existingAutoComment.permalink,
-          responseText.existingBreedIdAckText + SIGNATURE
-        );
-        console.log('[summons] linked existing reply', { commentId, existingAutoCommentId });
-        return true;
-      }
-    }
-  }
+  // Always create a summoned reply separately from the undoable automatic reply.
+  // Never register summoned replies in breed-id's automatic-comment storage.
 
   const responseBody = vet
     ? buildVetResponse(responseText.vetResponseText)

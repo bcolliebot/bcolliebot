@@ -22,7 +22,7 @@ This app is a migration of the legacy `BorderCollieBot` Reddit Data API automati
 
 - **Breed ID auto-response**: Detects likely breed-identification posts, applies flair, and posts a sticky informational reply
 - **Wrong undo flow**: Replying directly to the breed-ID auto reply with `wrong` removes it and clears the Breed ID flair. Explicit ID summons still work after an automatic reply is undone.
-- **Summon commands**: Supports commands such as `!appearance`, `!vet`, and name suggestion commands. Public command documentation is available at [bcolliebot.github.io/bcolliebot/commands.html](https://bcolliebot.github.io/bcolliebot/commands.html).
+- **Summon commands**: Supports commands such as `!id`, `!appearance`, `!vet`, and name suggestion commands. ID summons override `wrong` flags and create a separate reply that cannot be removed with `wrong`. Public command documentation is available at [bcolliebot.github.io/bcolliebot/commands.html](https://bcolliebot.github.io/bcolliebot/commands.html).
 - **Urgent rehoming moderation**: Detects urgent transfer/rehoming language and blocked crossposts for mod review or removal
 - **Image metadata review**: Reports image posts whose metadata suggests AI generation or provenance markers
 - **Low-score cleanup**: Scheduled cleanup for low-score bot comments

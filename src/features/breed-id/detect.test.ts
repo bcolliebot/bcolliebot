@@ -61,3 +61,8 @@ void test('the bot cannot undo itself when its automatic reply explains wrong fe
   assert.equal(isWrongFeedbackComment(body), true);
   assert.equal(isWrongFeedbackReply(body, 't3_post', 't1_bot'), false);
 });
+
+void test('wrong replies to summoned comments cannot undo automatic or summoned guidance', () => {
+  assert.equal(isWrongFeedbackReply('wrong', 't1_summoned', 't1_automatic'), false);
+  assert.equal(isWrongFeedbackReply('!wrong', 't1_summoned', undefined), false);
+});
