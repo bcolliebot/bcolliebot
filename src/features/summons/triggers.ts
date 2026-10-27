@@ -108,8 +108,14 @@ export async function handleSummonCommands(
   const postId = comment.postId;
   const commentBody = comment.body ?? '';
   const thresholds = await getBotThresholdSettings();
+  const ageHours = getAgeHours(comment.createdAt);
 
-  if (getAgeHours(comment.createdAt) > thresholds.summonMaxCommentAgeHours) {
+  if (ageHours > thresholds.summonMaxCommentAgeHours) {
+    console.log('[summons] skipped: comment too old', {
+      commentId,
+      ageHours,
+      maxAgeHours: thresholds.summonMaxCommentAgeHours,
+    });
     return false;
   }
 
@@ -119,6 +125,7 @@ export async function handleSummonCommands(
   if (namesMatch) {
     const claimed = await markCommentHandled(subredditId, commentId);
     if (claimed !== 1) {
+      console.log('[summons] skipped: already handled', { commentId, claimed });
       return true;
     }
 
@@ -136,18 +143,28 @@ export async function handleSummonCommands(
   const tokens = new Set((lowered.match(TOKEN_COMMAND_RE) ?? []).map((token) => token.toLowerCase()));
   const appearance = hasIntersection(tokens, APPEARANCE_TOKENS);
   const vet = hasIntersection(tokens, VET_TOKENS);
-  const wrongSubmission = await isWrongSubmission(subredditId, postId);
 
   if (!appearance && !vet) {
+    if (input.comment?.body && /!\w+/.test(input.comment.body)) {
+      console.log('[summons] skipped: no recognized command in fetched comment', {
+        commentId,
+        fetchedBodyLength: commentBody.length,
+        eventHasAppearanceCommand: /!(?:id|appearances?)\b/i.test(input.comment.body),
+      });
+    }
     return false;
   }
 
+  console.log('[summons] recognized command', { commentId, postId, appearance, vet });
+  const wrongSubmission = await isWrongSubmission(subredditId, postId);
   if (appearance && !vet && wrongSubmission) {
+    console.log('[summons] skipped: post previously marked wrong', { commentId, postId });
     return false;
   }
 
   const claimed = await markCommentHandled(subredditId, commentId);
   if (claimed !== 1) {
+    console.log('[summons] skipped: already handled', { commentId, claimed });
     return true;
   }
 
@@ -165,6 +182,7 @@ export async function handleSummonCommands(
           existingAutoComment.permalink,
           responseText.existingBreedIdAckText + SIGNATURE
         );
+        console.log('[summons] linked existing reply', { commentId, existingAutoCommentId });
         return true;
       }
     }
@@ -178,5 +196,6 @@ export async function handleSummonCommands(
       );
   const threadReply = await postThreadReply(asT3(postId), responseBody);
   await acknowledgeSummoner(asT1(commentId), threadReply.permalink, responseText.summonAckText);
+  console.log('[summons] posted reply', { commentId, replyId: threadReply.id });
   return true;
 }
